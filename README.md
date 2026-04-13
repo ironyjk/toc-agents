@@ -1,5 +1,7 @@
 # toc-agents
 
+[한국어 README](README.ko.md)
+
 **The complete Goldratt Theory of Constraints framework as Claude Code skills.**
 
 The first open-source implementation of TOC Thinking Processes, operations tools, and decision frameworks as AI agent skills. No external dependencies — copy the `.claude/` folder into any project and start analyzing.
