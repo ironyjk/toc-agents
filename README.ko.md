@@ -141,19 +141,20 @@ Mermaid 다이어그램은 GitHub, VS Code 등에서 바로 렌더링됩니다.
 
 ## 로드맵
 
-### v1.0 (현재)
+### v1.0
 - [x] 6개 Thinking Process 도구 (CRT, EC, FRT, PRT, TT, Five Steps)
 - [x] 4개 운영/전략 도구 (DBR, CCPM, Throughput Accounting, Buy-in)
 - [x] 멀티 에이전트 전체 워크플로우 파이프라인
 - [x] Mermaid + ASCII 출력
 
-### v2.0 (계획)
-- [ ] **OR-Tools 연동** — 수리적 최적화:
-  - **Product Mix LP** — 제약 용량 내 쓰루풋 최대화 선형계획법 (`/toc:throughput --solve`)
-  - **DBR 스케줄링** — CP-SAT 솔버 기반 제약 스케줄링 (`/toc:dbr --optimize`)
-  - **CCPM 리소스 레벨링** — 멀티 프로젝트 자원 배분 최적화
-  - **버퍼 사이징** — 몬테카를로 시뮬레이션으로 최적 버퍼 크기 산출
-  - Google [OR-Tools](https://developers.google.com/optimization) (Python) 사용 — Claude Code가 솔버 스크립트를 자동 생성/실행
+### v2.0 (현재)
+- [x] **OR-Tools 솔버** (`solvers/` 디렉토리):
+  - `product_mix.py` — 선형계획법으로 최적 제품 믹스 (`/toc:throughput --solve`)
+  - `dbr_scheduler.py` — CP-SAT 제약 스케줄링 (`/toc:dbr --optimize`)
+  - `ccpm_leveler.py` — 멀티 프로젝트 리소스 레벨링 (`/toc:ccpm --optimize`)
+  - `buffer_sim.py` — 몬테카를로 버퍼 사이징 (3가지 방법 비교)
+
+### v3.0 (계획)
 - [ ] Strategy & Tactics Tree (전략전술트리)
 - [ ] Viable Vision 분석
 - [ ] 대화형 모드 — 단계별 사용자 입력 가이드

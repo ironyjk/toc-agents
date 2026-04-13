@@ -54,21 +54,28 @@ def solve_dbr_schedule(data: dict) -> dict:
     buffer_hours = data.get("buffer_hours", 4)
     horizon = data.get("horizon_hours", 168)  # 1 week default
 
-    # Find drum (constraint)
-    drum_idx = next(i for i, s in enumerate(stages) if s.get("is_drum", False))
+    # Find drum (constraint) — auto-detect if not marked
+    drum_candidates = [i for i, s in enumerate(stages) if s.get("is_drum", False)]
+    if drum_candidates:
+        drum_idx = drum_candidates[0]
+    else:
+        # Auto-select: lowest capacity stage is the drum
+        drum_idx = min(range(len(stages)), key=lambda i: stages[i]["capacity_per_hour"])
     drum = stages[drum_idx]
 
     model = cp_model.CpModel()
 
     # Variables: start time and end time for each job at each stage
+    # NOTE: CP-SAT requires integer variables. All times are scaled x10
+    # (0.1h precision) then divided by 10 in output. E.g., 4.5h -> 45 -> display 4.5h
+    SCALE = 10
     starts = {}
     ends = {}
     intervals = {}
 
     for j_idx, job in enumerate(jobs):
         for s_idx, stage in enumerate(stages):
-            # Processing time = quantity / capacity (in hours, scaled to int)
-            proc_time = max(1, int(job["quantity"] / stage["capacity_per_hour"] * 10))  # x10 for precision
+            proc_time = max(1, round(job["quantity"] / stage["capacity_per_hour"] * SCALE))
 
             start_var = model.NewIntVar(0, horizon * 10, f"start_j{j_idx}_s{s_idx}")
             end_var = model.NewIntVar(0, horizon * 10, f"end_j{j_idx}_s{s_idx}")
@@ -182,7 +189,7 @@ def solve_dbr_schedule(data: dict) -> dict:
 
     makespan = max(j["completion"] for j in results["schedule"])
     results["summary"]["makespan_hours"] = round(makespan, 1)
-    results["summary"]["drum_utilization"] = round(drum_busy / makespan * 100, 1) if makespan > 0 else 0
+    results["summary"]["drum_utilization"] = round(drum_busy / horizon * 100, 1) if horizon > 0 else 0
     results["summary"]["total_tardiness_hours"] = round(results["summary"]["total_tardiness_hours"], 1)
 
     return results

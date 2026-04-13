@@ -49,6 +49,6 @@ question: "Describe the process or workflow you want to optimize. What are the m
 When `--optimize` is specified and the user provides **specific jobs with quantities and due dates**:
 
 1. Extract job data and stage capacities from the description
-2. Create JSON and run: `python solvers/dbr_scheduler.py --data /tmp/toc_dbr.json`
+2. Create JSON and run: `python solvers/dbr_scheduler.py --data toc_dbr.json`
 3. Present optimized schedule with drum start times (rope release order)
-4. Also run: `python solvers/buffer_sim.py --data /tmp/toc_buffer.json` for buffer sizing
+4. Also run: `python solvers/buffer_sim.py --data toc_buffer.json` for buffer sizing

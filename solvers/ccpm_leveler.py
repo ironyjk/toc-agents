@@ -66,8 +66,9 @@ def solve_ccpm(data: dict) -> dict:
     intervals = {}
     task_lookup = {}  # (proj_idx, task_name) -> task dict
 
+    # Pass 1: Create all variables first
     for p_idx, project in enumerate(projects):
-        for t_idx, task in enumerate(project["tasks"]):
+        for task in project["tasks"]:
             key = (p_idx, task["name"])
             task_lookup[key] = task
 
@@ -82,11 +83,18 @@ def solve_ccpm(data: dict) -> dict:
             ends[key] = e
             intervals[key] = iv
 
-            # Dependencies within project
+    # Pass 2: Add dependency constraints (all variables now exist)
+    for p_idx, project in enumerate(projects):
+        for task in project["tasks"]:
+            key = (p_idx, task["name"])
             for dep_name in task.get("depends_on", []):
                 dep_key = (p_idx, dep_name)
-                if dep_key in ends:
-                    model.Add(s >= ends[dep_key])
+                if dep_key not in ends:
+                    raise ValueError(
+                        f"Task '{task['name']}' depends on '{dep_name}' "
+                        f"which does not exist in project '{project['name']}'"
+                    )
+                model.Add(starts[key] >= ends[dep_key])
 
     # No multitasking: one task per resource at a time (across ALL projects)
     for resource in resources:
@@ -157,11 +165,12 @@ def solve_ccpm(data: dict) -> dict:
             max_end = max(max_end, e_val)
 
         proj_result["completion_day"] = max_end
-        # Critical chain = aggressive total
-        cc_length = sum(max(1, t["safe_estimate_days"] // 2) for t in project["tasks"])
+        # Critical chain = actual longest path (from solver schedule)
+        min_start = min(t["start_day"] for t in proj_result["tasks"])
+        cc_length = max_end - min_start
         proj_result["critical_chain_days"] = cc_length
-        proj_result["project_buffer_days"] = cc_length // 2
-        proj_result["buffered_completion"] = max_end + cc_length // 2
+        proj_result["project_buffer_days"] = max(1, cc_length // 2)
+        proj_result["buffered_completion"] = max_end + proj_result["project_buffer_days"]
 
         deadline = project.get("deadline_day", horizon)
         proj_result["on_time"] = proj_result["buffered_completion"] <= deadline

@@ -65,7 +65,7 @@ When `--solve` is specified and the problem is a **product mix** question:
 
 3. Run the solver:
    ```bash
-   python solvers/product_mix.py --data /tmp/toc_product_mix.json
+   python solvers/product_mix.py --data toc_product_mix.json
    ```
 
 4. Interpret the results: explain T/CU ranking, why some products get zero quantity, and what it means for the business.

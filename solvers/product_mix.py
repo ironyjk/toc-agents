@@ -7,7 +7,7 @@ products compete for limited constraint time.
 
 Usage:
     python solvers/product_mix.py --data products.json
-    python solvers/product_mix.py --interactive
+    python solvers/product_mix.py --example
 
 Input JSON format:
 {
@@ -130,9 +130,10 @@ def solve_product_mix(data: dict) -> dict:
     )
 
     results["constraint_used"] = round(results["constraint_used"], 1)
+    cap = constraint["capacity_minutes"]
     results["constraint_utilization"] = round(
-        results["constraint_used"] / constraint["capacity_minutes"] * 100, 1
-    )
+        results["constraint_used"] / cap * 100, 1
+    ) if cap > 0 else 0
 
     return results
 

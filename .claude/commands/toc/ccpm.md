@@ -51,6 +51,6 @@ question: "Describe the project you want to plan. What are the main tasks? What 
 When `--optimize` is specified and the user provides **specific tasks with resources, durations, and dependencies**:
 
 1. Extract project data from description
-2. Create JSON and run: `python solvers/ccpm_leveler.py --data /tmp/toc_ccpm.json`
-3. For buffer sizing: `python solvers/buffer_sim.py --data /tmp/toc_buffer.json`
+2. Create JSON and run: `python solvers/ccpm_leveler.py --data toc_ccpm.json`
+3. For buffer sizing: `python solvers/buffer_sim.py --data toc_buffer.json`
 4. Present: staggered schedule, buffer sizes (3 methods compared), and drum resource utilization

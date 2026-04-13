@@ -41,16 +41,24 @@ def triangular_sample(optimistic, most_likely, pessimistic, size=1):
 
 def beta_pert_sample(optimistic, most_likely, pessimistic, size=1, lambd=4):
     """Sample from Beta-PERT distribution (better than triangular for project estimates)."""
-    mean = (optimistic + lambd * most_likely + pessimistic) / (lambd + 2)
-    if pessimistic == optimistic:
+    if pessimistic <= optimistic:
         return np.full(size, most_likely)
 
+    mean = (optimistic + lambd * most_likely + pessimistic) / (lambd + 2)
+
+    # Guard against degenerate cases where most_likely == mean
+    denom1 = (most_likely - mean) * (pessimistic - optimistic)
+    denom2 = mean - optimistic
+    if abs(denom1) < 1e-10 or abs(denom2) < 1e-10:
+        # Fall back to triangular distribution for edge cases
+        return np.random.triangular(optimistic, most_likely, pessimistic, size)
+
     # Beta distribution parameters
-    alpha1 = ((mean - optimistic) * (2 * most_likely - optimistic - pessimistic)) / \
-             ((most_likely - mean) * (pessimistic - optimistic))
-    alpha1 = max(alpha1, 0.1)
-    alpha2 = alpha1 * (pessimistic - mean) / (mean - optimistic)
-    alpha2 = max(alpha2, 0.1)
+    alpha1 = ((mean - optimistic) * (2 * most_likely - optimistic - pessimistic)) / denom1
+    alpha2 = alpha1 * (pessimistic - mean) / denom2
+
+    if alpha1 <= 0 or alpha2 <= 0:
+        return np.random.triangular(optimistic, most_likely, pessimistic, size)
 
     samples = np.random.beta(alpha1, alpha2, size)
     return optimistic + samples * (pessimistic - optimistic)
@@ -70,10 +78,10 @@ def simulate_buffers(data: dict) -> dict:
     target_conf = data.get("target_confidence", 0.95)
     n_sims = data.get("simulations", 10000)
 
-    np.random.seed(data.get("seed", 42))
+    np.random.seed(data.get("seed", None))
 
-    # Aggressive estimates (50% cut — CCPM style)
-    aggressive_total = sum(t["most_likely"] / 2 for t in tasks)
+    # Aggressive estimates (CCPM: 50% of safe/pessimistic estimate)
+    aggressive_total = sum(t["pessimistic"] / 2 for t in tasks)
 
     # Simulate total duration
     total_durations = np.zeros(n_sims)
@@ -109,7 +117,7 @@ def simulate_buffers(data: dict) -> dict:
     variances = []
     for task in tasks:
         safe = task["pessimistic"]
-        aggressive = task["most_likely"] / 2
+        aggressive = task["pessimistic"] / 2
         safety = safe - aggressive
         variances.append(safety ** 2)
     rss_buffer = math.sqrt(sum(variances))
@@ -121,7 +129,7 @@ def simulate_buffers(data: dict) -> dict:
     task_analysis = []
     for task in tasks:
         samples = task_durations_all[task["name"]]
-        aggressive = task["most_likely"] / 2
+        aggressive = task["pessimistic"] / 2
         task_analysis.append({
             "name": task["name"],
             "optimistic": task["optimistic"],
