@@ -141,19 +141,20 @@ See [docs/goldratt-background.md](docs/goldratt-background.md) for a comprehensi
 
 ## Roadmap
 
-### v1.0 (Current)
+### v1.0
 - [x] 6 Thinking Process tools (CRT, EC, FRT, PRT, TT, Five Steps)
 - [x] 4 Operations/Strategy tools (DBR, CCPM, Throughput Accounting, Buy-in)
 - [x] Full workflow pipeline with multi-agent orchestration
 - [x] Mermaid + ASCII output
 
-### v2.0 (Planned)
-- [ ] **OR-Tools integration** for computational optimization:
-  - **Product Mix LP** — linear programming to maximize throughput given constraint capacity (`/toc:throughput --solve`)
-  - **DBR Scheduling** — constraint-based job scheduling with CP-SAT solver (`/toc:dbr --optimize`)
-  - **CCPM Resource Leveling** — multi-project resource allocation with staggering optimization
-  - **Buffer Sizing** — Monte Carlo simulation for optimal buffer sizes
-  - Uses Google [OR-Tools](https://developers.google.com/optimization) (Python) — Claude Code generates and runs solver scripts automatically
+### v2.0 (Current)
+- [x] **OR-Tools solvers** in `solvers/` directory:
+  - `product_mix.py` — Linear Programming for optimal product mix (`/toc:throughput --solve`)
+  - `dbr_scheduler.py` — CP-SAT job scheduling around the drum (`/toc:dbr --optimize`)
+  - `ccpm_leveler.py` — Multi-project resource leveling with staggering (`/toc:ccpm --optimize`)
+  - `buffer_sim.py` — Monte Carlo buffer sizing (3 methods compared)
+
+### v3.0 (Planned)
 - [ ] Strategy & Tactics Tree (S&T Tree) — Goldratt's strategic planning tool
 - [ ] Viable Vision analysis — "Can every company achieve viable vision?"
 - [ ] Interactive mode — step-by-step guided analysis with user input at each phase

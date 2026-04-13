@@ -1,7 +1,7 @@
 ---
 name: toc:dbr
 description: "Drum-Buffer-Rope — design a pull-based scheduling system around the constraint"
-argument-hint: "[Process: <text>] [--format mermaid|ascii] [--depth shallow|deep]"
+argument-hint: "[Process: <text>] [--format mermaid|ascii] [--depth shallow|deep] [--optimize]"
 ---
 
 EXECUTE IMMEDIATELY — do not deliberate, do not ask clarifying questions before reading the protocol.
@@ -43,3 +43,12 @@ question: "Describe the process or workflow you want to optimize. What are the m
    - Process flow diagram with Drum, Buffer, and Rope marked
    - Specific scheduling rules
    - Buffer management dashboard design
+
+## OR-Tools Solver Mode (--optimize)
+
+When `--optimize` is specified and the user provides **specific jobs with quantities and due dates**:
+
+1. Extract job data and stage capacities from the description
+2. Create JSON and run: `python solvers/dbr_scheduler.py --data /tmp/toc_dbr.json`
+3. Present optimized schedule with drum start times (rope release order)
+4. Also run: `python solvers/buffer_sim.py --data /tmp/toc_buffer.json` for buffer sizing

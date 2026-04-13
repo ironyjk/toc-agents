@@ -1,7 +1,7 @@
 ---
 name: toc:ccpm
 description: "Critical Chain Project Management — plan projects with shared buffers instead of padded task estimates"
-argument-hint: "[Project: <text>] [--format mermaid|ascii] [--depth shallow|deep]"
+argument-hint: "[Project: <text>] [--format mermaid|ascii] [--depth shallow|deep] [--optimize]"
 ---
 
 EXECUTE IMMEDIATELY — do not deliberate, do not ask clarifying questions before reading the protocol.
@@ -45,3 +45,12 @@ question: "Describe the project you want to plan. What are the main tasks? What 
    - Buffer sizes and placement
    - Staggering rules for multi-project environments
    - Buffer management dashboard
+
+## OR-Tools Solver Mode (--optimize)
+
+When `--optimize` is specified and the user provides **specific tasks with resources, durations, and dependencies**:
+
+1. Extract project data from description
+2. Create JSON and run: `python solvers/ccpm_leveler.py --data /tmp/toc_ccpm.json`
+3. For buffer sizing: `python solvers/buffer_sim.py --data /tmp/toc_buffer.json`
+4. Present: staggered schedule, buffer sizes (3 methods compared), and drum resource utilization
