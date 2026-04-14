@@ -183,6 +183,19 @@ Contributions welcome! Areas where help is needed:
 3. **Translations** — Korean, Japanese, Chinese, German, Portuguese
 4. **Testing** — run the tools against real problems and report quality
 
+## Use with /think (30 Tools)
+
+TOC works best when combined with other frameworks. Install [strategy-frameworks](https://github.com/ironyjk/strategy-frameworks) to get `/think` — a meta-agent that auto-selects the best tool(s) from 30 frameworks including TOC.
+
+```bash
+# Install all 30 tools (TOC + TRIZ + 9 strategy frameworks + /think)
+curl -fsSL https://raw.githubusercontent.com/ironyjk/strategy-frameworks/master/install.sh | bash
+```
+
+Related repos:
+- [strategy-frameworks](https://github.com/ironyjk/strategy-frameworks) — Wardley, OODA, Porter, Blue Ocean, Design Thinking, Drucker, BSC, First Principles + `/think` meta-agent
+- [triz-agents](https://github.com/ironyjk/triz-agents) — TRIZ (Altshuller) 9 tools for inventive problem solving
+
 ## Author
 
 **Heechul Choi** — CEO, DY Industrial Development  
